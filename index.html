@@ -166,15 +166,6 @@ body.opening .arch{animation:smoke 2.2s ease both}
 .recep p{font-size:13px;line-height:1.7;opacity:.9;margin-top:6px}
 .recep .pill{display:inline-block;margin-top:18px;border:1px solid rgba(236,213,155,.7);border-radius:999px;padding:9px 18px;font-size:10.5px;letter-spacing:.22em;color:var(--gold-l);text-transform:uppercase}
 
-/* ---------- story ---------- */
-.story{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding:26px calc(16px + 21cqw);margin:0 -16px;scrollbar-width:none}
-.story::-webkit-scrollbar{display:none}
-.ph{flex:0 0 64cqw;scroll-snap-align:center;margin:0 -3cqw;transition:transform .12s linear,opacity .12s linear}
-.ph-frame{background:#fff;padding:8px;border-radius:999px 999px 18px 18px;box-shadow:0 22px 40px -22px rgba(122,23,52,.55)}
-.ph-frame img{width:100%;aspect-ratio:4/5.2;object-fit:cover;border-radius:999px 999px 12px 12px}
-.ph-cap{position:relative;margin:-40px auto 12px;width:max-content;max-width:90%;background:rgba(255,255,255,.88);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-radius:999px;padding:7px 18px;font-family:var(--italic);font-style:italic;font-size:17px;color:var(--maroon)}
-.quote{font-family:var(--italic);font-style:italic;font-size:22px;color:var(--maroon2);margin-top:26px}
-
 /* ---------- reach ---------- */
 .map{display:block;position:relative;border-radius:20px;overflow:hidden;margin-top:26px;box-shadow:0 22px 40px -24px rgba(122,23,52,.5);border:6px solid #fff;background:#fbeff2}
 .map svg{display:block;width:100%;height:auto}
@@ -205,7 +196,7 @@ footer{padding:60px 16px 80px;text-align:center;max-width:520px;margin:0 auto}
 #toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,30px);opacity:0;background:var(--maroon);color:#fff;padding:10px 18px;border-radius:999px;font-size:13px;z-index:70;transition:all .35s;pointer-events:none}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 
-@media (min-width:760px){ .ev{flex-basis:56cqw} .ph{flex-basis:56cqw} .carousel{padding-inline:calc(16px + 24cqw)} .story{padding-inline:calc(16px + 25cqw)} }
+@media (min-width:760px){ .ev{flex-basis:56cqw} .carousel{padding-inline:calc(16px + 24cqw)} }
 @media (prefers-reduced-motion:reduce){ *,*::before,*::after{animation:none!important;transition-duration:.01s!important} #petals{display:none} }
 </style>
 </head>
@@ -376,19 +367,6 @@ footer{padding:60px 16px 80px;text-align:center;max-width:520px;margin:0 auto}
     </div>
   </section>
 
-  <!-- ======== OurStory ======== -->
-  <section id="story">
-    <svg class="rose" style="--s:86px;left:-30px;top:40px;animation-delay:-5s"><use href="#rose"/></svg>
-    <div class="reveal">
-      <div class="eyebrow">Moments</div>
-      <h2 class="title">Our Story</h2>
-      <svg class="divider"><use href="#orn"/></svg>
-    </div>
-    <div class="story" id="storyRow"></div>
-    <div class="dots" id="phDots"></div>
-    <div class="hint">‹ › Swipe to see more</div>
-    <p class="quote reveal">“Every road led me to you.”</p>
-  </section>
 
   <!-- ======== HowToReach ======== -->
   <section id="reach">
@@ -468,12 +446,6 @@ const W = {
     { name:'Shubh Vivah', hi:'शुभ विवाह (रात्रि में)', when:'Wed · 09 Dec 2026 · Night', venue:'Gram Sinduar, Barachatti, Gayaji (Bihar)', icon:'agni', c1:'#ef5b7a', c2:'#9b1f45', noteT:'Ceremony', note:'Pheras & pavan parinayotsav' },
     { name:'Reception', hi:'प्रीतिभोज', when:'Fri · 11 Dec 2026 · 7:00 pm', venue:'Our residence, Saroj Nagar, Chandwa', icon:'glass', c1:'#f1b6c6', c2:'#c9a35a', noteT:'Evening', note:'Dinner & blessings for the couple' },
   ],
-  photos: [
-    ['photos/01_golden_beach.jpg','By the shore'], ['photos/02_lake_mountains.jpg','Hills & us'],
-    ['photos/05_river_ghat.jpg','At the ghat'], ['photos/06_waterfall.jpg','Chasing waterfalls'],
-    ['photos/08_garden_path.jpg','Garden walks'], ['photos/09_rose_bokeh.jpg','Our quiet corner'],
-    ['photos/10_sunlit_wall.jpg','Golden hour'], ['photos/19_shubh_vivah_portrait.jpg','The big yes'],
-  ],
 };
 /* =============================================================== */
 
@@ -488,7 +460,7 @@ Object.assign(W, {
 document.querySelectorAll('[data-k]').forEach(el => el.innerHTML = W[el.dataset.k]);
 document.title = `${W.groom} & ${W.bride} · Shubh Vivah`;
 
-/* ---------- events + story carousels ---------- */
+/* ---------- events carousel ---------- */
 $('#events').innerHTML = W.events.map(e => `
   <article class="ev"><div class="ev-card" style="--c1:${e.c1};--c2:${e.c2}">
     <div class="ev-art"><div class="sun"></div><svg class="toran"><use href="#toran"/></svg>
@@ -499,8 +471,6 @@ $('#events').innerHTML = W.events.map(e => `
       <div class="ev-venue">${e.venue}</div>
       <div class="ev-note"><span class="sw"></span><div><small>${e.noteT}</small><p>${e.note}</p></div></div>
     </div></div></article>`).join('');
-$('#storyRow').innerHTML = W.photos.map(([src, cap]) => `
-  <figure class="ph"><div class="ph-frame"><img src="${src}" alt="${cap}" loading="lazy"></div><figcaption class="ph-cap">${cap}</figcaption></figure>`).join('');
 
 function coverflow(row, dots, tilt) {
   const items = [...row.children];
@@ -524,7 +494,6 @@ function coverflow(row, dots, tilt) {
   update();
 }
 coverflow($('#events'), $('#evDots'), 14);
-coverflow($('#storyRow'), $('#phDots'), 8);
 
 /* ---------- falling petals (canvas) ---------- */
 const cv = $('#petals'), ctx = cv.getContext('2d');
