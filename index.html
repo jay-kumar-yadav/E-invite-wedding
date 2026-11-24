@@ -526,32 +526,33 @@ function tick() {
 }
 if (!matchMedia('(prefers-reduced-motion: reduce)').matches) tick();
 
+/* ---------- music ---------- */
+const music = $('#music'), musicBtn = $('#musicBtn');
+let wantMusic = false;                                               // true once the book is opened; false again if the guest pauses
+const playMusic = () => { if (wantMusic) music.play().catch(() => {}); };
+const syncBtn = () => { musicBtn.classList.toggle('off', music.paused); musicBtn.setAttribute('aria-label', music.paused ? 'Play music' : 'Pause music'); };
+music.addEventListener('play', syncBtn); music.addEventListener('pause', syncBtn);
+musicBtn.addEventListener('click', () => { wantMusic = music.paused; wantMusic ? playMusic() : music.pause(); });
+document.addEventListener('visibilitychange', () => document.hidden ? music.pause() : playMusic());
+// Browsers that block sound until the guest interacts get it on their first tap, click or key instead.
+const GESTURES = ['pointerdown', 'pointerup', 'touchend', 'click', 'keydown'];
+const unlock = e => { if (!e.target.closest?.('#musicBtn')) playMusic(); };
+GESTURES.forEach(t => addEventListener(t, unlock, { capture: true, passive: true }));
+music.addEventListener('playing', () => GESTURES.forEach(t => removeEventListener(t, unlock, { capture: true })), { once: true });
+
 /* ---------- opening book ---------- */
 const book = $('#book');
 function openBook() {
   if (book.classList.contains('open')) return;
   book.classList.add('open');
+  wantMusic = true; playMusic();                                     // the song starts with the book (or on the first tap, where the browser blocks it)
   const r = book.getBoundingClientRect(); burst(r.left + r.width / 2, r.top + r.height / 2, 50);
   setTimeout(() => { document.body.classList.remove('locked'); document.body.classList.add('opening'); $('#cover').classList.add('gone'); scrollTo(0, 0); }, 1300);
 }
 book.addEventListener('click', openBook);
 book.addEventListener('keydown', e => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), openBook()));
-setTimeout(openBook, 1200);                                          // opens by itself; a tap just opens it sooner
+setTimeout(openBook, 1200);                                          // opens by itself
 
-/* ---------- music ---------- */
-const music = $('#music'), musicBtn = $('#musicBtn');
-let wantMusic = true;                                                // false once the guest pauses it
-const playMusic = () => { if (wantMusic) music.play().catch(() => {}); };
-const syncBtn = () => { musicBtn.classList.toggle('off', music.paused); musicBtn.setAttribute('aria-label', music.paused ? 'Play music' : 'Pause music'); };
-music.addEventListener('play', syncBtn); music.addEventListener('pause', syncBtn);
-musicBtn.addEventListener('click', () => { wantMusic = music.paused; wantMusic ? playMusic() : music.pause(); });
-// Browsers refuse sound before the guest interacts, so try now and again on their first tap, click or key.
-const GESTURES = ['pointerdown', 'pointerup', 'touchend', 'click', 'keydown'];
-const unlock = e => { if (!e.target.closest?.('#musicBtn')) playMusic(); };
-GESTURES.forEach(t => addEventListener(t, unlock, { capture: true, passive: true }));
-music.addEventListener('playing', () => GESTURES.forEach(t => removeEventListener(t, unlock, { capture: true })), { once: true });
-document.addEventListener('visibilitychange', () => document.hidden ? music.pause() : playMusic());
-playMusic();
 
 /* ---------- pull to reveal ---------- */
 const paper = $('#paper'), scrollEl = $('#scroll'), CLOSED = 10;
